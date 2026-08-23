@@ -8,6 +8,7 @@ import geopandas as gpd
 import shapely
 
 from bokeh.models import HoverTool
+from cartopy import crs as ccrs
 import holoviews as hv
 import geoviews as gv
 import geoviews.tile_sources as gvts
@@ -26,7 +27,7 @@ pn.extension()
 
 
 # Path to data files
-path_vm_local = Path("/media/volume/shimada_202506_volume/integration")
+path_vm_local = Path("/Users/wujung/hake_postproc_2025_cloud")
 file_grid = path_vm_local / "grid_cells.geojson"
 file_NASC = path_vm_local / "NASC_all.csv"
 file_length_count = path_vm_local / "length_count_all.csv"
@@ -289,7 +290,7 @@ def plot_grid_map(
         gdf_grids, 
         vdims=[var, f"{var}_label", "area"]
     ).opts(
-        width=900,
+        width=600,
         height=800,
         colorbar=True,
         cmap="viridis",
@@ -438,7 +439,7 @@ def plot_track_map(
         colorbar=True,
         size="size",
         alpha=0.5,
-        width=900,
+        width=600,
         height=800,
         tools=["hover"],
         xlabel="Longitude",
@@ -458,8 +459,21 @@ def plot_track_map(
         line_width=1
     )
 
+    # Derive latitude extent with padding
+    latitude_padding = 1
+    latitude_min = df_NASC_sel["latitude"].min() - latitude_padding
+    latitude_max = df_NASC_sel["latitude"].max() + latitude_padding
+
+    # WMTS/Bokeh axes use Web Mercator meters, so project latitude degrees first
+    mercator = ccrs.GOOGLE_MERCATOR
+    plate_carree = ccrs.PlateCarree()
+    y_min = mercator.transform_point(0, latitude_min, plate_carree)[1]
+    y_max = mercator.transform_point(0, latitude_max, plate_carree)[1]
+
     # Combine with tilemap
-    overlay = tile * points * track
+    overlay = (tile * points * track).opts(
+        ylim=(y_min, y_max),
+    )
 
     return overlay
 

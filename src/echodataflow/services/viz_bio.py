@@ -7,7 +7,7 @@ import pandas as pd
 import geopandas as gpd
 import shapely
 
-from bokeh.models import HoverTool
+from bokeh.models import HoverTool, PrintfTickFormatter
 from cartopy import crs as ccrs
 import holoviews as hv
 import geoviews as gv
@@ -15,7 +15,7 @@ import geoviews.tile_sources as gvts
 import panel as pn
 
 
-from viz_core import (
+from echodataflow.services.viz_core import (
     THEME, BIO_VAR_NAME, COLORBAR_LABEL, BIO_VAR_UNIT, BIO_VAR_CLIM
 )
 
@@ -296,7 +296,8 @@ def plot_grid_map(
         cmap="viridis",
         clim=var_clim,
         clipping_colors={"NaN": "white"},
-        colorbar_opts={"title": colorbar_label},
+        clabel=f"{colorbar_label} ({var_units})",
+        colorbar_opts={"formatter": PrintfTickFormatter(format="%.1e")},
         line_color="black",
         alpha=0.5,
         labelled=[bio_var],
@@ -437,6 +438,8 @@ def plot_track_map(
         cmap="Reds",
         clim=var_clim,
         colorbar=True,
+        clabel=f"{colorbar_label} ({var_units})",
+        colorbar_opts={"formatter": PrintfTickFormatter(format="%.1e")},
         size="size",
         alpha=0.5,
         width=600,

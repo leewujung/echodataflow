@@ -458,8 +458,8 @@ def plot_track_map(
         width=800,
         height=800,
         tools=["hover"],
-        xlabel="Longitude",
-        ylabel="Latitude",
+        xlabel="Longitude (\u00B0E)",
+        ylabel="Latitude (\u00B0N)",
         title=f"Ship track with {bio_var}",
         hover_tooltips=[
             ('Longitude', '@longitude'),

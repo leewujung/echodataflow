@@ -232,9 +232,10 @@ update_text_grid_app = pn.pane.Markdown(
 )
 
 bio_var_selector_grid_map = pn.widgets.Select(
-    name="Biological estimate to plot",
+    name="Variable to display",
     options=list(BIO_VAR_NAME.keys()),
-    value="NASC"
+    value="NASC",
+    width=200,
 )
 
 # Get all WMTS tile source names
@@ -243,7 +244,8 @@ tile_options = [name for name, obj in gvts.__dict__.items() if isinstance(obj, g
 tile_selector_grid_map = pn.widgets.Select(
     name="Basemap tile source",
     options=tile_options,
-    value="EsriNatGeo"
+    value="EsriNatGeo",
+    width=300,
 )
 
 # Hidden widget for forcing plot refresh
@@ -317,9 +319,18 @@ def grid_app():
     """
     Application to visualize bio estimate grid cells.
     """
+    selectors = pn.Row(
+        pn.Spacer(sizing_mode="stretch_width"),
+        bio_var_selector_grid_map,
+        tile_selector_grid_map,
+        pn.Spacer(sizing_mode="stretch_width"),
+        width=600,
+    )
     layout = pn.Column(
-        update_text_grid_app, bio_var_selector_grid_map, tile_selector_grid_map, plot_grid_map,
-        sizing_mode="stretch_width"
+        update_text_grid_app,
+        selectors,
+        plot_grid_map,
+        sizing_mode="stretch_width",
     )
 
     def scheduled_update():
@@ -365,9 +376,10 @@ update_text_track_app = pn.pane.Markdown(
 )
 
 bio_var_selector_track_map = pn.widgets.Select(
-    name="Biological estimate to plot",
+    name="Variable to display",
     options=["NASC", "Number density", "Biomass density"],
-    value="NASC"
+    value="NASC",
+    width=200,
 )
 
 # Get all WMTS tile source names
@@ -376,7 +388,8 @@ tile_options = [name for name, obj in gvts.__dict__.items() if isinstance(obj, g
 tile_selector_track_map = pn.widgets.Select(
     name="Basemap tile source",
     options=tile_options,
-    value="EsriOceanBase"
+    value="EsriOceanBase",
+    width=300,
 )
 
 # Hidden widget for forcing plot refresh
@@ -442,7 +455,7 @@ def plot_track_map(
         colorbar_opts={"formatter": PrintfTickFormatter(format="%.1e")},
         size="size",
         alpha=0.5,
-        width=600,
+        width=800,
         height=800,
         tools=["hover"],
         xlabel="Longitude",
@@ -485,9 +498,18 @@ def track_app():
     """
     Application to visualize track with NASC bubbles.
     """
+    selectors = pn.Row(
+        pn.Spacer(sizing_mode="stretch_width"),
+        bio_var_selector_track_map,
+        tile_selector_track_map,
+        pn.Spacer(sizing_mode="stretch_width"),
+        width=800,
+    )
     layout = pn.Column(
-        update_text_track_app, bio_var_selector_track_map, tile_selector_track_map, plot_track_map,
-        sizing_mode="stretch_width"
+        update_text_track_app,
+        selectors,
+        plot_track_map,
+        sizing_mode="stretch_width",
     )
 
     def scheduled_update():

@@ -15,8 +15,8 @@ GRID_PARAMS = {
     },
     # Grid the resolution in the x- and y-directions in units nmi
     "resolution" : {
-        "x_distance": 15.0,
-        "y_distance": 15.0
+        "x_distance": 20.0,
+        "y_distance": 20.0
         # "x_distance": 25.0,
         # "y_distance": 25.0
     },

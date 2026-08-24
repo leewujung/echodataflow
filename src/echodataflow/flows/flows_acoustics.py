@@ -10,11 +10,9 @@ import echopype as ep
 
 from prefect import flow, get_run_logger, get_client
 from prefect.futures import as_completed
-from prefect.states import Cancelled, Failed
+from prefect.states import Failed
 from prefect import runtime
-from prefect.events import emit_event
 
-from echodataflow.flows.flows_helper import deployment_already_running
 from echodataflow.deployment.task_runners import dask_task_runner_from_environment
 from echodataflow.utils.manifests import (
     MVBS_COLUMNS_POSTPROCESSING,
@@ -76,20 +74,6 @@ def flow_raw2Sv(
     add_location: bool = True,
     add_splitbeam_angle: bool = False,
 ):
-
-    # Check if the deployment is already running
-    already_running = asyncio.run(deployment_already_running())
-    if already_running:
-
-        async def cancel_run():
-            async with get_client() as client:
-                await client.set_flow_run_state(
-                    flow_run_id=runtime.flow_run.id,
-                    state=Cancelled(message="Another instance of this flow is already running"),
-                )
-
-        asyncio.run(cancel_run())
-        return  # exit the flow early
 
     # Assemble paths
     path_Sv_zarr = Path(path_main) / "Sv"
@@ -242,15 +226,6 @@ def flow_raw2Sv(
 
         asyncio.run(set_failed_state())
         raise Exception(error_msg)
-
-    emit_event(
-        event="echodataflow.sv.updated",
-        resource={
-            "prefect.resource.id": "sv-monitor",
-            "prefect.resource.name": "sv-monitor",
-        },
-    )
-
 
 @flow(log_prints=True)
 async def flow_create_MVBS(
